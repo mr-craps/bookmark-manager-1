@@ -1,0 +1,46 @@
+﻿
+<script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#btnSaveNewCategory').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("_AddCategory", "Bookmarks")',
+                dataType: "json",
+                data: {
+                    "categoryName": $("#newCategory").val().trim()
+                },
+                success: function (result) {
+                    var optionExists = ($('#CategoryId option[value=' + result.value.id + ']').length > 0);
+                    if (!optionExists) {
+                        $('#CategoryId').append($('<option/>', {
+                            value: result.value.id,
+                            text: result.value.name
+                        }));
+                    }
+                    $("#newCategory").val("");
+                    $("#lblUpdatedDropdown").text("The new \"" + result.value.name + "\" category is available for selection!")
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    <h4>Create Category without refresh</h4>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label for="newCategory">New Category</label>
+            <input type="text" id="newCategory" />
+            <input type="button" id="btnSaveNewCategory" value="Save New Category" />
+        </div>
+    </div>
+}
